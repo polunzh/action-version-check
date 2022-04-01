@@ -27,7 +27,7 @@ module.exports = async function run() {
     const baseVersion = data.toString().trim();
     console.log('base version:', baseVersion);
     const currentVersion = await fs.readFile('./version');
-    console.log('current version:', currentVersion);
+    console.log('current version:', currentVersion.toString());
   } catch (error) {
     core.setFailed(error.message);
   }
