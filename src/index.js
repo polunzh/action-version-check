@@ -1,5 +1,6 @@
 const core = require('@actions/core');
 const github = require('@actions/github');
+const { promises: fs } = require('fs');
 
 module.exports = async function run() {
   try {
@@ -25,7 +26,9 @@ module.exports = async function run() {
       pull_number: contextPullRequest.number,
     });
 
-    core.info(`---${pullRequest.title}---`);
+    let content = await fs.readFile('./version');
+    content = content.trim();
+    core.info(`---${pullRequest.title}--${content}---`);
   } catch (error) {
     core.setFailed(error.message);
   }
