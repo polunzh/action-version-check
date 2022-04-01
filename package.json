@@ -23,7 +23,8 @@
   "homepage": "https://github.com/arcblock/action-version-check#readme",
   "dependencies": {
     "@actions/core": "^1.2.4",
-    "@actions/github": "^1.1.0"
+    "@actions/github": "^1.1.0",
+    "axios": "^0.26.1"
   },
   "devDependencies": {
     "eslint": "7.9.0",

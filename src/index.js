@@ -1,11 +1,10 @@
 const core = require('@actions/core');
 const github = require('@actions/github');
+const { default: axios } = require('axios');
 const { promises: fs } = require('fs');
 
 module.exports = async function run() {
   try {
-    const client = new github.GitHub(process.env.GITHUB_TOKEN);
-
     const contextPullRequest = github.context.payload.pull_request;
     if (!contextPullRequest) {
       throw new Error(
@@ -16,19 +15,18 @@ module.exports = async function run() {
     const owner = contextPullRequest.base.user.login;
     const repo = contextPullRequest.base.repo.name;
 
-    // The pull request info on the context isn't up to date. When
-    // the user updates the title and re-runs the workflow, it would
-    // be outdated. Therefore fetch the pull request via the REST API
-    // to ensure we use the current title.
-    const { data: pullRequest } = await client.pulls.get({
-      owner,
-      repo,
-      pull_number: contextPullRequest.number,
-    });
+    const baseSHA = github.context.payload.pull_request.base.sha;
+    const headers = {};
+    if (process.env.GITHUB_TOKEN) {
+      headers.Authorization = process.GITHUB_TOKEN;
+    }
 
-    const content = await fs.readFile('./version');
-    // content = content.trim();
-    core.info(`---${pullRequest.title}--${content}---`);
+    const versionURL = `https://raw.githubusercontent.com/${github.context.repo.owner}/${github.context.repo.repo}/${baseSHA}/version`;
+    const { data } = await axios.get(versionURL, { headers });
+    const baseVersion = data.toString().trim();
+    console.log('base version:', baseVersion);
+    const currentVersion = await fs.readFile('./version');
+    console.log('current version:', currentVersion);
   } catch (error) {
     core.setFailed(error.message);
   }
