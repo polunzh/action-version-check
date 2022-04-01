@@ -25,8 +25,8 @@ module.exports = async function run() {
     const baseVersion = data.toString().trim();
     let currentVersion = await fs.readFile('./version');
     currentVersion = currentVersion.toString().trim();
-    core.info('Base version:', baseVersion);
-    core.info('Current version:', currentVersion);
+    core.info(`Base version:', ${baseVersion}`);
+    core.info(`Current version: ${currentVersion}`);
 
     if (!semver.valid(baseVersion)) {
       throw new Error(`Invalid base version: ${baseVersion}`);
@@ -36,7 +36,7 @@ module.exports = async function run() {
       throw new Error(`Invalid current version: ${currentVersion}`);
     }
 
-    if (semver.let(currentVersion, base)) {
+    if (semver.let(currentVersion, baseVersion)) {
       throw new Error('The version is not bumped');
     }
   } catch (error) {
