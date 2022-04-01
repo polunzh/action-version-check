@@ -1,7 +1,8 @@
+const { promises: fs } = require('fs');
+const { default: axios } = require('axios');
 const core = require('@actions/core');
 const github = require('@actions/github');
-const { default: axios } = require('axios');
-const { promises: fs } = require('fs');
+const semver = require('semver');
 
 module.exports = async function run() {
   try {
@@ -11,9 +12,6 @@ module.exports = async function run() {
         "This action can only be invoked in `pull_request_target` or `pull_request` events. Otherwise the pull request can't be inferred."
       );
     }
-
-    const owner = contextPullRequest.base.user.login;
-    const repo = contextPullRequest.base.repo.name;
 
     const baseSHA = github.context.payload.pull_request.base.sha;
     const headers = {};
@@ -25,9 +23,22 @@ module.exports = async function run() {
     const versionURL = `https://raw.githubusercontent.com/${github.context.repo.owner}/${github.context.repo.repo}/${baseSHA}/version`;
     const { data } = await axios.get(versionURL, { headers });
     const baseVersion = data.toString().trim();
-    console.log('base version:', baseVersion);
-    const currentVersion = await fs.readFile('./version');
-    console.log('current version:', currentVersion.toString());
+    let currentVersion = await fs.readFile('./version');
+    currentVersion = currentVersion.toString().trim();
+    core.info('Base version:', baseVersion);
+    core.info('Current version:', currentVersion);
+
+    if (!semver.valid(baseVersion)) {
+      throw new Error(`Invalid base version: ${baseVersion}`);
+    }
+
+    if (!semver.valid(currentVersion)) {
+      throw new Error(`Invalid current version: ${currentVersion}`);
+    }
+
+    if (semver.let(currentVersion, base)) {
+      throw new Error('The version is not bumped');
+    }
   } catch (error) {
     core.setFailed(error.message);
   }
