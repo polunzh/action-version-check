@@ -15,11 +15,6 @@ jobs:
         with:
           node-version: 16
       - run: yarn install
-      - name: Get version on main branch
-        id: mainVersion
-        run: git show HEAD~:version
-      - name: Output
-        run: echo "Version = ${{ steps.mainVersion.outputs }}"
       - uses: ./
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
