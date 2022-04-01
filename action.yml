@@ -1,8 +1,8 @@
 name: action-version-check
-author: Jonathan Häberle <jonathan.haeberle@gmail.com>
-description: Ensure your PR title matches the requirements in the commitlint config.
+author: zhenqiang <zhenqiang@arcblock.io>
+description: Check if the current version is compliant with the specification.
 runs:
-  using: 'node12'
+  using: 'node16'
   main: 'index.js'
 branding:
   icon: 'shield'

@@ -1,4 +1,4 @@
-name: 'Lint PR title'
+name: 'Check Version'
 on:
   pull_request:
     types:
@@ -11,9 +11,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+        with:
+          ref: master
       - uses: actions/setup-node@v1
         with:
-          node-version: 14
+          node-version: 16
+      - run: yarn install
       - uses: ./
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
