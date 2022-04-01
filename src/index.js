@@ -26,8 +26,8 @@ module.exports = async function run() {
       pull_number: contextPullRequest.number,
     });
 
-    let content = await fs.readFile('./version');
-    content = content.trim();
+    const content = await fs.readFile('./version');
+    // content = content.trim();
     core.info(`---${pullRequest.title}--${content}---`);
   } catch (error) {
     core.setFailed(error.message);
