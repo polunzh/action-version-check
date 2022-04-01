@@ -1,0 +1,9 @@
+name: action-version-check
+author: zhenqiang <zhenqiang@arcblock.io>
+description: Check if the current version is compliant with the specification.
+runs:
+  using: 'node16'
+  main: 'dist/index.js'
+branding:
+  icon: 'shield'
+  color: 'green'
