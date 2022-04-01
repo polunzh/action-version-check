@@ -25,7 +25,7 @@ module.exports = async function run() {
     const baseVersion = data.toString().trim();
     let currentVersion = await fs.readFile('./version');
     currentVersion = currentVersion.toString().trim();
-    core.info(`Base version:', ${baseVersion}`);
+    core.info(`Base version:, ${baseVersion}`);
     core.info(`Current version: ${currentVersion}`);
 
     if (!semver.valid(baseVersion)) {
