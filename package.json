@@ -1,0 +1,35 @@
+{
+  "name": "action-version-check",
+  "version": "0.0.1",
+  "description": "Check if the current version is compliant with the specification",
+  "main": "index.js",
+  "scripts": {
+    "lint": "eslint src",
+    "test": "jest src"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/arcblock/action-version-check.git"
+  },
+  "keywords": [
+    "github-action",
+    "commitlint"
+  ],
+  "author": "zhenqiang <zhenqiang@arcblock.io>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/arcblock/action-version-check/issues"
+  },
+  "homepage": "https://github.com/arcblock/action-version-check#readme",
+  "dependencies": {
+    "@actions/core": "^1.2.4",
+    "@actions/github": "^1.1.0"
+  },
+  "devDependencies": {
+    "eslint": "7.9.0",
+    "jest": "24.9.0"
+  },
+  "engines": {
+    "node": "^14.0.0"
+  }
+}
