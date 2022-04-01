@@ -39,6 +39,8 @@ module.exports = async function run() {
     if (semver.let(currentVersion, baseVersion)) {
       throw new Error('The version is not bumped');
     }
+
+    core.info('Version check passed!');
   } catch (error) {
     core.setFailed(error.message);
   }
