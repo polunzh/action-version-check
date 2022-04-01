@@ -1,4 +1,3 @@
-const { promises: fs } = require('fs');
 const { default: axios } = require('axios');
 const core = require('@actions/core');
 const github = require('@actions/github');
@@ -14,17 +13,23 @@ module.exports = async function run() {
     }
 
     const baseSHA = github.context.payload.pull_request.base.sha;
+    const headSHA = github.context.payload.pull_request.head.sha;
     const headers = {};
     const token = process.env.GITHUB_TOKEN;
     if (token) {
       headers.Authorization = token;
     }
 
-    const versionURL = `https://raw.githubusercontent.com/${github.context.repo.owner}/${github.context.repo.repo}/${baseSHA}/version`;
-    const { data } = await axios.get(versionURL, { headers });
-    const baseVersion = data.toString().trim();
-    let currentVersion = await fs.readFile('./version');
+    const baseVersionURL = `https://raw.githubusercontent.com/${github.context.repo.owner}/${github.context.repo.repo}/${baseSHA}/version`;
+    let { data: baseVersion } = await axios.get(baseVersionURL, { headers });
+    baseVersion = baseVersion.toString().trim();
+
+    const currentVersionURL = `https://raw.githubusercontent.com/${github.context.repo.owner}/${github.context.repo.repo}/${headSHA}/version`;
+    let { data: currentVersion } = await axios.get(currentVersionURL, {
+      headers,
+    });
     currentVersion = currentVersion.toString().trim();
+
     core.info(`Base version:, ${baseVersion}`);
     core.info(`Current version: ${currentVersion}`);
 
