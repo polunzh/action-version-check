@@ -17,8 +17,9 @@ module.exports = async function run() {
 
     const baseSHA = github.context.payload.pull_request.base.sha;
     const headers = {};
-    if (process.env.GITHUB_TOKEN) {
-      headers.Authorization = process.GITHUB_TOKEN;
+    const token = process.env.GITHUB_TOKEN;
+    if (token) {
+      headers.Authorization = token;
     }
 
     const versionURL = `https://raw.githubusercontent.com/${github.context.repo.owner}/${github.context.repo.repo}/${baseSHA}/version`;
