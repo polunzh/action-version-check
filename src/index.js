@@ -1,11 +1,11 @@
+const { promises: fs } = require('fs');
+const { default: axios } = require('axios');
 const core = require('@actions/core');
 const github = require('@actions/github');
-const { promises: fs } = require('fs');
+const semver = require('semver');
 
 module.exports = async function run() {
   try {
-    const client = new github.GitHub(process.env.GITHUB_TOKEN);
-
     const contextPullRequest = github.context.payload.pull_request;
     if (!contextPullRequest) {
       throw new Error(
@@ -13,22 +13,34 @@ module.exports = async function run() {
       );
     }
 
-    const owner = contextPullRequest.base.user.login;
-    const repo = contextPullRequest.base.repo.name;
+    const baseSHA = github.context.payload.pull_request.base.sha;
+    const headers = {};
+    const token = process.env.GITHUB_TOKEN;
+    if (token) {
+      headers.Authorization = token;
+    }
 
-    // The pull request info on the context isn't up to date. When
-    // the user updates the title and re-runs the workflow, it would
-    // be outdated. Therefore fetch the pull request via the REST API
-    // to ensure we use the current title.
-    const { data: pullRequest } = await client.pulls.get({
-      owner,
-      repo,
-      pull_number: contextPullRequest.number,
-    });
+    const versionURL = `https://raw.githubusercontent.com/${github.context.repo.owner}/${github.context.repo.repo}/${baseSHA}/version`;
+    const { data } = await axios.get(versionURL, { headers });
+    const baseVersion = data.toString().trim();
+    let currentVersion = await fs.readFile('./version');
+    currentVersion = currentVersion.toString().trim();
+    core.info(`Base version:, ${baseVersion}`);
+    core.info(`Current version: ${currentVersion}`);
 
-    const content = await fs.readFile('./version');
-    // content = content.trim();
-    core.info(`---${pullRequest.title}--${content}---`);
+    if (!semver.valid(baseVersion)) {
+      throw new Error(`Invalid base version: ${baseVersion}`);
+    }
+
+    if (!semver.valid(currentVersion)) {
+      throw new Error(`Invalid current version: ${currentVersion}`);
+    }
+
+    if (semver.lte(currentVersion, baseVersion)) {
+      throw new Error('The version is not bumped');
+    }
+
+    core.info('Version check passed!');
   } catch (error) {
     core.setFailed(error.message);
   }
