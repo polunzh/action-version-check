@@ -36,7 +36,7 @@ module.exports = async function run() {
       throw new Error(`Invalid current version: ${currentVersion}`);
     }
 
-    if (semver.let(currentVersion, baseVersion)) {
+    if (semver.lte(currentVersion, baseVersion)) {
       throw new Error('The version is not bumped');
     }
 
